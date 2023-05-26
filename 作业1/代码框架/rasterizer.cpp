@@ -144,7 +144,8 @@ void rst::rasterizer::draw(rst::pos_buf_id pos_buffer, rst::ind_buf_id ind_buffe
     float f1 = (100 - 0.1) / 2.0;
     float f2 = (100 + 0.1) / 2.0;
 
-    Eigen::Matrix4f mvp = projection * view * model;
+    //Eigen::Matrix4f mvp = projection * view * model; //mvp矩阵的计算
+    Eigen::Matrix4f mvp = projection * view * model * rodrigues;//计算mvp矩阵，因为绕任意轴旋转也是模型变换的一种，所以放在model矩阵的相邻位置
     for (auto& i : ind)
     {
         Triangle t;
@@ -152,7 +153,7 @@ void rst::rasterizer::draw(rst::pos_buf_id pos_buffer, rst::ind_buf_id ind_buffe
         Eigen::Vector4f v[] = {
                 mvp * to_vec4(buf[i[0]], 1.0f),
                 mvp * to_vec4(buf[i[1]], 1.0f),
-                mvp * to_vec4(buf[i[2]], 1.0f)
+                mvp * to_vec4(buf[i[2]], 1.0f) ////计算获得三个顶点经过mvp转换后的坐标
         };
 
         for (auto& vec : v) {
@@ -164,7 +165,7 @@ void rst::rasterizer::draw(rst::pos_buf_id pos_buffer, rst::ind_buf_id ind_buffe
             vert.x() = 0.5*width*(vert.x()+1.0);
             vert.y() = 0.5*height*(vert.y()+1.0);
             vert.z() = vert.z() * f1 + f2;
-        }
+        }//视口变换
 
         for (int i = 0; i < 3; ++i)
         {
@@ -203,6 +204,11 @@ void rst::rasterizer::set_projection(const Eigen::Matrix4f& p)
     projection = p;
 }
 
+//设置罗德里格斯矩阵到光栅里面：
+void rst::rasterizer::set_rodrigues(const Eigen::Matrix4f& r){
+    rodrigues = r;
+}
+
 void rst::rasterizer::clear(rst::Buffers buff)
 {
     if ((buff & rst::Buffers::Color) == rst::Buffers::Color)
@@ -230,7 +236,7 @@ void rst::rasterizer::set_pixel(const Eigen::Vector3f& point, const Eigen::Vecto
 {
     //old index: auto ind = point.y() + point.x() * width;
     if (point.x() < 0 || point.x() >= width ||
-        point.y() < 0 || point.y() >= height) return;
+        point.y() < 0 || point.y() >= height) return;//如果像素点坐标超出屏幕范围，不处理
     auto ind = (height-point.y())*width + point.x();
     frame_buf[ind] = color;
 }
