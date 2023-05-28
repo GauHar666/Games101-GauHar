@@ -178,7 +178,7 @@ void rst::rasterizer::draw(rst::pos_buf_id pos_buffer, rst::ind_buf_id ind_buffe
         t.setColor(1, 0.0  ,255.0,  0.0);
         t.setColor(2, 0.0  ,  0.0,255.0);
 
-        rasterize_wireframe(t);
+        rasterize_wireframe(t);//实际就是画线，三个顶点分别划线。
     }
 }
 
