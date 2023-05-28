@@ -48,8 +48,17 @@ static bool insideTriangle(int x, int y, const Vector3f* _v)
     std::vector<Vector3f> ver,ver2;
     
     ver.push_back({_v[1].x()-_v[0].x(),_v[1].y()-_v[0].y(),0});
+    ver2.push_back({x-_v[0].x(),y-_v[0].y(),0});
+    ver.push_back({_v[2].x()-_v[1].x(),_v[2].y()-_v[1].y(),0});
     ver2.push_back({x-_v[1].x(),y-_v[1].y(),0});
+    ver.push_back({_v[0].x()-_v[2].x(),_v[0].y()-_v[2].y(),0});
+    ver2.push_back({x-_v[2].x(),y-_v[2].y(),0});
 
+    //逆时针叉乘，只要有应该z为负，就说明在三角形外面
+    for(int i=0;i<3;i++){
+        if(ver[i].cross(ver2[i]).z()<0) return false; //叉乘在C++中可以直接cross
+    }
+    return true;
 }
 
 static std::tuple<float, float, float> computeBarycentric2D(float x, float y, const Vector3f* v)
@@ -110,20 +119,39 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
 }
 
 //Screen space rasterization
+//Screen space rasterization
+//Screen space rasterization
 void rst::rasterizer::rasterize_triangle(const Triangle& t) {
     auto v = t.toVector4();
-    
+    float alpha, beta, gamma, lmin=INT_MAX, rmax=INT_MIN, tmax=INT_MIN, bmin=INT_MAX;
     // TODO : Find out the bounding box of current triangle.
+    for(auto &k:v){//找到bounding box的边界坐标
+        lmin = int(std::min(lmin,k.x()));
+        rmax = std::max(rmax,k.x());rmax = rmax == int(rmax) ? int(rmax)-1 : rmax;
+        tmax = std::max(tmax,k.y());tmax = tmax == int(tmax) ? int(tmax)-1 : tmax;
+        bmin = int(std::min(bmin,k.y()));
+    }
     // iterate through the pixel and find if the current pixel is inside the triangle
+    for(float i = lmin; i <= rmax; i++){//遍历bounding box像素
+        for(float j = bmin; j <= tmax; j++){
+            if(insideTriangle(i, j, t.v)){//如果在三角形内
+                // If so, use the following code to get the interpolated z value.
+                std::tie(alpha, beta, gamma) = computeBarycentric2D(i+0.5, j+0.5, t.v);//对当前像素坐标z值插值
 
-    // If so, use the following code to get the interpolated z value.
-    //auto[alpha, beta, gamma] = computeBarycentric2D(x, y, t.v);
-    //float w_reciprocal = 1.0/(alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());
-    //float z_interpolated = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
-    //z_interpolated *= w_reciprocal;
-
-    // TODO : set the current pixel (use the set_pixel function) to the color of the triangle (use getColor function) if it should be painted.
+                float w_reciprocal = 1.0/(alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());
+                float z_interpolated = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
+                z_interpolated *= w_reciprocal;
+                if(-z_interpolated < depth_buf[get_index(i,j)]){//如果当前z值比像素z值小（这里是把z值换成正数比较的）
+                    // TODO : set the current pixel (use the set_pixel function) to the color of the triangle (use getColor function) if it should be painted.
+                    set_pixel({i,j,1},t.getColor());
+                    depth_buf[get_index(i,j)] = -z_interpolated;//设置像素颜色，修改像素当前深度   
+                }
+            }
+        }
+    }
 }
+
+
 
 void rst::rasterizer::set_model(const Eigen::Matrix4f& m)
 {
