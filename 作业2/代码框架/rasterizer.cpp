@@ -124,7 +124,7 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
 //Screen space rasterization
 void rst::rasterizer::rasterize_triangle(const Triangle& t) {
     auto v = t.toVector4();
-    float alpha, beta, gamma, lmin=INT_MAX, rmax=INT_MIN, tmax=INT_MIN, bmin=INT_MAX;
+    float alpha, beta, gamma, lmin=INT_MAX, rmax=INT_MIN, tmax=INT_MIN, bmin=INT_MAX; //α，β，γ为重心的三个系数
     // TODO : Find out the bounding box of current triangle.
     for(auto &k:v){//找到bounding box的边界坐标
         lmin = int(std::min(lmin,k.x()));
