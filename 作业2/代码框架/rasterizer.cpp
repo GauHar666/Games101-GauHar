@@ -34,6 +34,7 @@ rst::col_buf_id rst::rasterizer::load_colors(const std::vector<Eigen::Vector3f> 
     return {id};
 }
 
+//把三维坐标转换为齐次坐标
 auto to_vec4(const Eigen::Vector3f& v3, float w = 1.0f)
 {
     return Vector4f(v3.x(), v3.y(), v3.z(), w);
@@ -54,7 +55,7 @@ static bool insideTriangle(int x, int y, const Vector3f* _v)
     ver.push_back({_v[0].x()-_v[2].x(),_v[0].y()-_v[2].y(),0});
     ver2.push_back({x-_v[2].x(),y-_v[2].y(),0});
 
-    //逆时针叉乘，只要有应该z为负，就说明在三角形外面
+    //逆时针叉乘，只要有一个z为负，就说明在三角形外面
     for(int i=0;i<3;i++){
         if(ver[i].cross(ver2[i]).z()<0) return false; //叉乘在C++中可以直接cross
     }

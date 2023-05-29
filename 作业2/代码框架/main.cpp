@@ -22,7 +22,7 @@ Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
     return view;
 }
 
-Eigen::Matrix4f get_model_matrix(float rotation_angle)//模型变换矩阵
+Eigen::Matrix4f get_model_matrix(float rotation_angle)//模型变换矩阵,绕z轴转
 {
     Eigen::Matrix4f model = Eigen::Matrix4f::Identity();
 
@@ -48,7 +48,7 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
 {
     // Students will implement this function
 
-    Eigen::Matrix4f projection = Eigen::Matrix4f::Identity();
+    Eigen::Matrix4f projection = Eigen::Matrix4f::Identity();//在定义该矩阵变量时，创建一个同尺寸同数据类型的单位阵，对其初始化。
 
     // TODO: Implement this function
     // Create the projection matrix for the given parameters.
@@ -69,7 +69,8 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
              0, 2 / h, 0, 0,
              0, 0, 2 / z, -(zFar+zNear) / 2,
              0, 0, 0, 1;//正交投影矩阵，因为在观测投影时x0y平面视角默认是中心，所以这里的正交投影就不用平移x和y了
-             				
+
+    //正交×透视=透视	
     projection = ortho * proj * projection;
 
     return projection;
