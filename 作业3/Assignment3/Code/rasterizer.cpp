@@ -262,14 +262,14 @@ void rst::rasterizer::rasterize_triangle(const Triangle& t, const std::array<Eig
     // TODO: From your HW3, get the triangle rasterization code.
     auto v = t.toVector4();
     Eigen::Vector3f color;
-    float alpha, beta, gamma, lmin=INT_MAX, rmax=INT_MIN, tmax=INT_MIN, bmin=INT_MAX;
+    float alpha, beta, gamma, lmin=INT_MAX, rmax=INT_MIN, tmax=INT_MIN, bmin=INT_MAX,id;
     for(auto &k:v){
         lmin = int(std::min(lmin,k.x()));
         rmax = std::max(rmax,k.x());
-        rmax = rmax == int(ramx) ? int(rmax)-1 : rmax;
-        tmax = std:max(tmax,k.y());
+        rmax = rmax == int(rmax) ? int(rmax)-1 : rmax;
+        tmax = std::max(tmax,k.y());
         tmax = tmax == int(tmax) ? int(tmax)-1 : tmax;
-        bmin = int(std:min(bmin,k.y()));
+        bmin = int(std::min(bmin,k.y()));
     }
     for(float i = lmin; i <= rmax; i++){
         for(float j = bmin; j <= tmax; j++){//遍历bounding box像素
