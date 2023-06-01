@@ -55,6 +55,20 @@ void bezier(const std::vector<cv::Point2f> &control_points, cv::Mat &window)
     for(double t = 0; t <= 1; t+=0.001){
         auto point = recursive_bezier(control_points, t);
         window.at<cv::Vec3b>(point.y, point.x)[1] = 255;//使用绿色显示。
+        //以下是提高部分，防走样操作：
+        const float x[4] = {0.0,0.0,0.5,-0.5};
+        const float y[4] = {0.5,-0.5,0.0,0.0};
+        int xnow = round(point.x),ynow = round(point.y);//四舍五入
+        float d = std::sqrt(std::pow(point.x-xnow,2)+std::pow(point.y-ynow,2));
+        for(int i=0;i<4;i++){
+            float x_neibor = floor(point.x+x[i]);//floor表示向下取整
+            float y_neibor = floor(point.y+y[i]);
+            if(x_neibor>=0 && x_neibor<700 && y_neibor>=0 && y_neibor<700){
+                float w = d/std::sqrt((std::pow(x_neibor-point.x,2)+std::pow(y_neibor-point.y,2)));
+                //当你处理下一个像素时，可能得到其最近邻域有一个是上一个已经处理的像素，如果直接对其赋值，会导致曲线有些像素出现不正常的暗，看起来断断续续的。
+                window.at<cv::Vec3b>(y_neibor, x_neibor)[1] = std::max(float(window.at<cv::Vec3b>(y_neibor, x_neibor)[1]), 255 * w);
+            }
+        }
     }
 
 }
