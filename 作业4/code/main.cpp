@@ -37,7 +37,7 @@ cv::Point2f recursive_bezier(const std::vector<cv::Point2f> &control_points, flo
     if(control_points.size() == 2){
         return control_points[0]+ t*(control_points[1]-control_points[0]);
     }
-    //重新用一个vector存放少了一轮的结果：
+    //重新用一个vector存放少了一个点的结果：
     std::vector<cv::Point2f> control_points_temp;
     for(int i=0;i<control_points.size()-1;i++){
         auto temp = control_points[i]+t*(control_points[i+1]-control_points[i]);
