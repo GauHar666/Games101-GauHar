@@ -4,6 +4,7 @@
 
 #include <cstring>
 
+<<<<<<< HEAD
 bool rayTriangleIntersect(const Vector3f& v0, const Vector3f& v1, const Vector3f& v2, const Vector3f& orig,
                           const Vector3f& dir, float& tnear, float& u, float& v)
 {
@@ -11,6 +12,20 @@ bool rayTriangleIntersect(const Vector3f& v0, const Vector3f& v1, const Vector3f
     // that's specified bt v0, v1 and v2 intersects with the ray (whose
     // origin is *orig* and direction is *dir*)
     // Also don't forget to update tnear, u and v.
+=======
+//v0,v1,v2是三角形的三个顶点，orig是发射点，dir是方向
+bool rayTriangleIntersect(const Vector3f& v0, const Vector3f& v1, const Vector3f& v2, const Vector3f& orig,
+                          const Vector3f& dir, float& tnear, float& u, float& v)
+{
+    //这里均为套公式即可
+    Vector3f E1 = v1-v0, E2 = v2-v0, S = orig-v0;
+    Vector3f S1=crossProduct(dir, E2) , S2=crossProduct(S,E1);
+    if(dotProduct(S1,E1)<=0) return false;
+    tnear = dotProduct(S2,E2) / dotProduct(S1,E1);
+    u = dotProduct(S1,S) / dotProduct(S1,E1);
+    v = dotProduct(S2,dir) / dotProduct(S1,E1);
+    if(tnear>=0 && u>=0 && v>=0 && (1-u-v)>=0) return true;
+>>>>>>> 0f0be9e00abf61476239abf73c196b3d2e29c709
     return false;
 }
 
@@ -56,6 +71,11 @@ public:
         return intersect;
     }
 
+<<<<<<< HEAD
+=======
+    //获得物体表面属性：
+    //它接受一个交点坐标、三角形索引、以及三角形顶点的法向量和纹理坐标，并计算并返回该交点处的法向量和纹理坐标
+>>>>>>> 0f0be9e00abf61476239abf73c196b3d2e29c709
     void getSurfaceProperties(const Vector3f&, const Vector3f&, const uint32_t& index, const Vector2f& uv, Vector3f& N,
                               Vector2f& st) const override
     {
@@ -65,9 +85,17 @@ public:
         Vector3f e0 = normalize(v1 - v0);
         Vector3f e1 = normalize(v2 - v1);
         N = normalize(crossProduct(e0, e1));
+<<<<<<< HEAD
         const Vector2f& st0 = stCoordinates[vertexIndex[index * 3]];
         const Vector2f& st1 = stCoordinates[vertexIndex[index * 3 + 1]];
         const Vector2f& st2 = stCoordinates[vertexIndex[index * 3 + 2]];
+=======
+        //通过stCoordinates获取三个顶点的纹理坐标
+        const Vector2f& st0 = stCoordinates[vertexIndex[index * 3]];
+        const Vector2f& st1 = stCoordinates[vertexIndex[index * 3 + 1]];
+        const Vector2f& st2 = stCoordinates[vertexIndex[index * 3 + 2]];
+        //插值获得焦点处纹理坐标
+>>>>>>> 0f0be9e00abf61476239abf73c196b3d2e29c709
         st = st0 * (1 - uv.x - uv.y) + st1 * uv.x + st2 * uv.y;
     }
 

@@ -1,0 +1,3 @@
+/home/melodic/桌面/Games101/作业4/code/build/CMakeFiles/rebuild_cache.dir
+/home/melodic/桌面/Games101/作业4/code/build/CMakeFiles/BezierCurve.dir
+/home/melodic/桌面/Games101/作业4/code/build/CMakeFiles/edit_cache.dir
