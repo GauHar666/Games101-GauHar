@@ -96,7 +96,7 @@ Vector3f Scene::castRay(const Ray &ray, int depth) const
     //没有阻挡应该距离为非负数，这里是为了弥补浮点数的误差
     if(d2-d>-0.001){
         Vector3f eval = m->eval(wo,ws,N); //BRDF值eval
-        float cos_theta = dotProduct(N,ws);
+      //float cos_theta = dotProduct(N,ws);
         float cos_theta = dotProduct(N,ws);
         float cos_theta_x = dotProduct(NN,-ws);//ws从物体指向光源，与NN的夹角大于180
         L_dir = emit * eval * cos_theta * cos_theta_x / std::pow(d,2) / pdf_L;
